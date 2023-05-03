@@ -3011,6 +3011,51 @@
         "x-ms-visibility": "advanced"
       }
     },
+    "/accounts/{accountId}/tab_definitions": {
+      "get": {
+        "tags": [
+          "DocuSign"
+        ],
+        "summary": "Get document custom tabs of an account",
+        "description": "Returns all the document custom tabs for a given recipient",
+        "operationId": "GetDocumentCustomTabs",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Account id",
+            "required": true,
+            "x-ms-summary": "Account",
+            "x-ms-test-value": "insert account id",
+            "x-ms-dynamic-values": {
+              "operationId": "GetLoginAccounts",
+              "value-collection": "loginAccounts",
+              "value-path": "accountIdGuid",
+              "value-title": "name"
+            },
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DocumentCustomTabsResponse"
+            }
+          }
+        },
+        "deprecated": false,
+        "x-ms-no-generic-test": true,
+        "x-ms-visibility": "advanced"
+      }
+    },
     "/accounts/{accountId}/envelopes/{envelopeId}/recipients/{recipientId}/recipientTabs": {
       "get": {
         "tags": [
@@ -4205,6 +4250,49 @@
           "description": "The id of the recipient.",
           "type": "string",
           "x-ms-summary": "Recipient Id"
+        }
+      }
+    },
+    "DocumentCustomTab": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the document custom tab.",
+          "type": "string",
+          "x-ms-summary": "Name"
+        },
+        "type": {
+          "description": "The type of the document custom tab.",
+          "type": "string",
+          "x-ms-summary": "Type"
+        },
+        "initialValue": {
+          "description": "The value of the document custom tab.",
+          "type": "string",
+          "x-ms-summary": "Intial Value"
+        },
+        "tabLabel": {
+          "description": "The label of the document custom tab.",
+          "type": "string",
+          "x-ms-summary": "Tab Label"
+        },
+        "customTabId": {
+          "description": "The document custom tab id.",
+          "type": "string",
+          "x-ms-summary": "Document Custom Tab Id"
+        }
+      }
+    },
+    "DocumentCustomTabsResponse": {
+      "type": "object",
+      "properties": {
+        "documentCustomTabs": {
+          "description": "Document custom tab",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentCustomTab"
+          },
+          "x-ms-summary": "Document Custom Tab:"
         }
       }
     },

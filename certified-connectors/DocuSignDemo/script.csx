@@ -1754,6 +1754,35 @@ public class Script : ScriptBase
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
     }
 
+    if ("GetDocumentCustomTabs".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    {
+      var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
+      var newBody = new JObject();
+      JArray documentCustomTabs = new JArray();
+
+      foreach(JProperty tabTypes in body.Properties())
+      {
+        foreach(var tab in tabTypes.Value)
+        {
+          if (!string.IsNullOrWhiteSpace(tab["customTabId"].ToString()))
+          {
+            documentCustomTabs.Add(new JObject()
+            {
+              ["name"] = tab["name"],
+              ["type"] = tab["type"],
+              ["initialValue"] = tab["initialValue"],
+              ["tabLabel"] = tab["tabLabel"],
+              ["customTabId"] = tab["customTabId"]
+            });
+          }
+        }
+      }
+
+      newBody["documentCustomTabs"] = documentCustomTabs;
+
+      response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
+    }
+
     if ("GetTabInfo".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
     {
       var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
