@@ -3017,7 +3017,7 @@
           "DocuSign"
         ],
         "summary": "Get document custom tabs of an account",
-        "description": "Returns all the document custom tabs for a given recipient",
+        "description": "Returns all the document custom tabs for a given account",
         "operationId": "GetDocumentCustomTabs",
         "consumes": [],
         "produces": [

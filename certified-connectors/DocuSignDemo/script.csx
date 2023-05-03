@@ -1779,7 +1779,6 @@ public class Script : ScriptBase
       }
 
       newBody["documentCustomTabs"] = documentCustomTabs;
-
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
     }
 
