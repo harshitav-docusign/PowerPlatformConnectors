@@ -1778,6 +1778,44 @@ public class Script : ScriptBase
       this.Context.Request.Content = CreateJsonContent(newBody.ToString());
     }
 
+    if("scp-get-related-activites".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    {
+      var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
+      var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
+      this.Context.Logger.LogInformation("********Logging the recordType: " + query.Get("recordType"));
+      
+      if (uriBuilder.Uri.ToString().Contains("startDateTime"))
+      {
+        query["from_date"] = query.Get("startDateTime");
+      }
+      if (uriBuilder.Uri.ToString().Contains("endDateTime"))
+      {
+        query["to_date"] = query.Get("endDateTime");
+      }
+
+      if (uriBuilder.Uri.ToString().Contains("recordId"))
+      {
+        query["custom_field"] = "entityId=" + query.Get("recordId");
+      }
+      
+      if (uriBuilder.Uri.ToString().Contains("crmType"))
+      {
+        query["custom_field"] = "crmType=" + query.Get("crmType");
+      }
+      if (uriBuilder.Uri.ToString().Contains("crmOrgUrl"))
+      {
+        query["custom_field"] = "crmHost=" + query.Get("crmOrgUrl");
+      } 
+      
+      query["include"] = "custom_fields";
+      query["custom_field"] = "entityLogicalName=" + query.Get("recordType")?.ToString();
+
+      uriBuilder.Query = query.ToString();
+      this.Context.Logger.LogInformation("********Logging the query string" + uriBuilder.Path.ToString());
+      
+      this.Context.Request.RequestUri = uriBuilder.Uri;
+    }
+
     if ("GetRecipientFields".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
     {
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
@@ -2133,6 +2171,12 @@ public class Script : ScriptBase
 
       newBody["docgenFields"] = formFields;
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
+    }
+
+    if ("scp-get-related-activites".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    {
+      var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
+      response.Content = new StringContent(body.ToString(), Encoding.UTF8, "application/json");
     }
 
     if ("GetRecipientFields".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))

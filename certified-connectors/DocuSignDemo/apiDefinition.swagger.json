@@ -1242,6 +1242,147 @@
         },
         "deprecated": false,
         "x-ms-visibility": "important"
+      },
+      "get": {
+        "tags": [
+          "DocuSign"
+        ],
+        "summary": "Sales Copilot: Get Related Activities",
+        "description": "Sales Copilot: Get Related Activities.",
+        "operationId": "scp-get-related-activites",
+        "x-ms-no-generic-test": true,
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Account id",
+            "required": true,
+            "x-ms-summary": "Account",
+            "x-ms-test-value": "insert account id",
+            "x-ms-dynamic-values": {
+              "operationId": "GetLoginAccounts",
+              "value-collection": "loginAccounts",
+              "value-path": "accountIdGuid",
+              "value-title": "name"
+            },
+            "type": "string"
+          },
+          {
+            "name": "recordType",
+            "in": "query",
+            "required": false,              
+            "enum": [
+              "account",
+              "opportunity",
+              "lead"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "recordId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startDateTime",
+            "in": "query",
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "endDateTime",
+            "in": "query",
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "top",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "crmType",
+            "in": "query",
+            "enum": [
+              "Salesforce",
+              "Dynamics365"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "crmOrgUrl",
+            "in": "query",
+            "type": "string"
+          }           
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ActivityListResponseEnvelope"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+                "$ref": "#/definitions/ApiError"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              } 
+            },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            }
+          },
+        "x-ms-openai-data": {
+        "openai-enabled": true
+        }
       }
     },
     "/accounts/{accountId}/envelopes/{envelopeId}": {
@@ -4570,6 +4711,35 @@
         }
       }
     },
+    "Activity": {
+      "required": [
+        "dateTime",
+        "description",
+        "title"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "minLength": 1,
+          "type": "string"
+          },
+        "description": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "dateTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "url": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },    
     "Envelope": {
       "type": "object",
       "properties": {
@@ -4638,6 +4808,44 @@
           "x-ms-visibility": "important"
         }
       }
+    },
+    "ActivityListResponseEnvelope": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Activity"
+          }
+        },
+        "hasMoreResults": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiError": {
+      "required": [
+        "errorCode"
+      ],
+      "type": "object",
+      "properties": {
+        "errorCode": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "errorMessage": {
+          "type": "string"
+        },
+        "activityId": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": { }
+        }
+      },
+      "additionalProperties": false
     },
     "CreateEnvelopeResponse": {
       "type": "object",
