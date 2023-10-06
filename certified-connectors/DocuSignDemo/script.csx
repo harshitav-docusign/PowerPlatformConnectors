@@ -1782,36 +1782,46 @@ public class Script : ScriptBase
     {
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
-      this.Context.Logger.LogInformation("********Logging the recordType: " + query.Get("recordType"));
-      
-      if (uriBuilder.Uri.ToString().Contains("startDateTime"))
-      {
-        query["from_date"] = query.Get("startDateTime");
-      }
-      if (uriBuilder.Uri.ToString().Contains("endDateTime"))
-      {
-        query["to_date"] = query.Get("endDateTime");
-      }
+      var uri = uriBuilder.Uri.ToString();
+      this.Context.Logger.LogInformation("********Logging the query string" + uriBuilder.Uri.ToString());
 
-      if (uriBuilder.Uri.ToString().Contains("recordId"))
+      var customFieldParam = "entityLogicalName=" + query.Get("recordType");
+      string[] searchFilters = { "startDateTime", "endDateTime", "recordId", "crmType", "crmOrgUrl" };
+
+      foreach(var filterType in searchFilters)
       {
-        query["custom_field"] = "entityId=" + query.Get("recordId");
+        switch (filterType)
+        {
+            case "startDateTime":
+              query["from_date"] = query.Get("startDateTime");
+              break;
+            case "endDateTime":
+              query["to_date"] = query.Get("endDateTime");
+              break;
+            case "recordId":
+              customFieldParam = uri.Contains("recordId") ? 
+                customFieldParam + "&entityId=" + query.Get("recordId") :
+                customFieldParam;
+              break;
+            case "crmType":
+              customFieldParam = uri.Contains("crmType") ?
+                customFieldParam + "&crmType=" + query.Get("crmType") :
+                customFieldParam;
+              break;
+            case "crmOrgUrl":
+              customFieldParam = uri.Contains("crmOrgUrl") ?
+                customFieldParam + "&crmHost=" + query.Get("crmOrgUrl") :
+                customFieldParam;
+              break;
+        }
       }
       
-      if (uriBuilder.Uri.ToString().Contains("crmType"))
-      {
-        query["custom_field"] = "crmType=" + query.Get("crmType");
-      }
-      if (uriBuilder.Uri.ToString().Contains("crmOrgUrl"))
-      {
-        query["custom_field"] = "crmHost=" + query.Get("crmOrgUrl");
-      } 
-      
+      query["custom_field"] = customFieldParam.ToString();
       query["include"] = "custom_fields";
-      query["custom_field"] = "entityLogicalName=" + query.Get("recordType")?.ToString();
 
+      this.Context.Logger.LogInformation("********Logging the custom field string" + customFieldParam.ToString());
       uriBuilder.Query = query.ToString();
-      this.Context.Logger.LogInformation("********Logging the query string" + uriBuilder.Path.ToString());
+      this.Context.Logger.LogInformation("********Logging the query string" + uriBuilder.Uri.ToString());
       
       this.Context.Request.RequestUri = uriBuilder.Uri;
     }
