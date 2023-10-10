@@ -1802,9 +1802,15 @@ public class Script : ScriptBase
     {
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
-
+      uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedRecords", "");
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
-      query["include"] = "custom_fields, recipients";
+
+      if (!string.IsNullOrEmpty(query.Get("startDateTime")))
+      {
+        query["from_date"] = query.Get("startDateTime");
+      }
+
+      query["include"] = "custom_fields, recipients, documents";
       uriBuilder.Query = query.ToString();
       this.Context.Request.RequestUri = uriBuilder.Uri;
     }
@@ -2191,15 +2197,17 @@ public class Script : ScriptBase
             filteredActivities.Add(new JObject()
             {
               ["title"] = envelope["emailSubject"],
-              ["description"] = envelope["recipients"]["signers"][0]["name"] + ";" +
-                envelope["envelopeId"] + ";" + 
+              ["description"] = envelope["recipients"]["signers"][0]["name"] + "," +
+                envelope["status"] + " " +
+                envelope["envelopeId"] + " on " + 
                 envelope["statusChangedDateTime"],
               ["dateTime"] = envelope["statusChangedDateTime"],
               ["url"] = envelope["envelopeUri"],
-              ["additionalProperties"] = envelope["recipients"]["signers"][0]["name"] + ";" +
-                envelope["sender"]["userName"] + ";" + 
-                envelope["envelopeId"] + ";" +
-                envelope["statusChangedDateTime"]
+              ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
+                "Owner: " + envelope["sender"]["userName"] + ";" +
+                "Status reason: " +  envelope["status"] + ";" +
+                "EnvelopeId: " + envelope["envelopeId"] + ";" +
+                "Status changed date: " + envelope["statusChangedDateTime"]
             });
           }
         }
@@ -2231,7 +2239,7 @@ public class Script : ScriptBase
       var crmOrgUrl = query.Get("crmOrgUrl") ?? null;
       var recordId = query.Get("recordId") ?? null;
       var crmType = "CRMToken";
-      string[] filters = { crmType, crmOrgUrl, recordId };
+      string[] filters = { crmType, recordId, crmOrgUrl};
 
       foreach (var filter in filters.Where(filter => filter != null)) 
       {
@@ -2241,16 +2249,16 @@ public class Script : ScriptBase
           {
             filteredRecords.Add(new JObject()
             {
-              ["title"] = envelope["emailSubject"],
-              ["description"] = envelope["recipients"]["signers"][0]["name"] + ";" +
-                envelope["envelopeId"] + ";" + 
-                envelope["statusChangedDateTime"],
-              ["dateTime"] = envelope["statusChangedDateTime"],
+              ["recordId"] = envelope["envelopeId"],
+              ["recordTypeDisplayName"] = "Agreement",
+              ["recordTypePluralDisplayName"] = "Agreements",
+              ["recordType"] = "Agreement",
+              ["recordTitle"] = envelope["emailSubject"],
               ["url"] = envelope["envelopeUri"],
-              ["additionalProperties"] = envelope["recipients"]["signers"][0]["name"] + ";" +
-                envelope["sender"]["userName"] + ";" + 
-                envelope["envelopeId"] + ";" +
-                envelope["statusChangedDateTime"]
+              ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
+                "Owner: " + envelope["sender"]["userName"] + ";" + 
+                "EnvelopeId: " + envelope["envelopeId"] + ";" +
+                "Status changed date: " + envelope["statusChangedDateTime"]
             });
           }
         }
@@ -2262,6 +2270,10 @@ public class Script : ScriptBase
         }
       }
 
+      newBody["documentRecords"] = (documentRecords.Count < top) ? documentRecords : new JArray(documentRecords.Skip(skip).Take(top).ToArray());
+      newBody["hasMoreResults"] = (skip + top < documentRecords.Count) ? true : false;
+
+      response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
     }
 
     if ("GetRecipientFields".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))

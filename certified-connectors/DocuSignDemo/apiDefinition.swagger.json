@@ -1445,6 +1445,14 @@
             "type": "string"
           },
           {
+            "name": "startDateTime",
+            "description": "Enter start date-time in the format: 2017-05-02T01:44Z",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "format": "date-time"
+          },
+          {
             "name": "top",
             "description": "Top envelopes to be returned",
             "in": "query",
@@ -4892,6 +4900,14 @@
           "minLength": 1,
           "type": "string"
         },
+        "recordTypePluralDisplayName": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "recordType": {
+          "minLength": 1,
+          "type": "string"
+        },
         "recordTitle": {
           "minLength": 1,
           "type": "string"
@@ -4900,12 +4916,9 @@
           "type": "string"
         },
         "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
+          "type": "string"
           }
-        }
-      },
+        },
       "additionalProperties": false
     },  
     "Envelope": {
