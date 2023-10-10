@@ -1782,47 +1782,30 @@ public class Script : ScriptBase
     {
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
-      var uri = uriBuilder.Uri.ToString();
-      this.Context.Logger.LogInformation("********Logging the query string" + uriBuilder.Uri.ToString());
 
-      var customFieldParam = "entityLogicalName=" + query.Get("recordType");
-      string[] searchFilters = { "startDateTime", "endDateTime", "recordId", "crmType", "crmOrgUrl" };
-
-      foreach(var filterType in searchFilters)
+      query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
+      if (!string.IsNullOrEmpty(query.Get("startDateTime")))
       {
-        switch (filterType)
-        {
-            case "startDateTime":
-              query["from_date"] = query.Get("startDateTime");
-              break;
-            case "endDateTime":
-              query["to_date"] = query.Get("endDateTime");
-              break;
-            case "recordId":
-              customFieldParam = uri.Contains("recordId") ? 
-                customFieldParam + "&entityId=" + query.Get("recordId") :
-                customFieldParam;
-              break;
-            case "crmType":
-              customFieldParam = uri.Contains("crmType") ?
-                customFieldParam + "&crmType=" + query.Get("crmType") :
-                customFieldParam;
-              break;
-            case "crmOrgUrl":
-              customFieldParam = uri.Contains("crmOrgUrl") ?
-                customFieldParam + "&crmHost=" + query.Get("crmOrgUrl") :
-                customFieldParam;
-              break;
-        }
+        query["from_date"] = query.Get("startDateTime");
+      }
+      if (!string.IsNullOrEmpty(query.Get("endDateTime")))
+      {
+        query["from_date"] = query.Get("endDateTime");
       }
       
-      query["custom_field"] = customFieldParam.ToString();
-      query["include"] = "custom_fields";
-
-      this.Context.Logger.LogInformation("********Logging the custom field string" + customFieldParam.ToString());
+      query["include"] = "custom_fields, recipients";
       uriBuilder.Query = query.ToString();
-      this.Context.Logger.LogInformation("********Logging the query string" + uriBuilder.Uri.ToString());
-      
+      this.Context.Request.RequestUri = uriBuilder.Uri;
+    }
+
+    if("scp-get-related-records".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    {
+      var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
+      var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
+
+      query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
+      query["include"] = "custom_fields, recipients";
+      uriBuilder.Query = query.ToString();
       this.Context.Request.RequestUri = uriBuilder.Uri;
     }
 
@@ -2186,7 +2169,99 @@ public class Script : ScriptBase
     if ("scp-get-related-activites".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
     {
       var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
-      response.Content = new StringContent(body.ToString(), Encoding.UTF8, "application/json");
+      var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
+      JObject newBody = new JObject();
+
+      JArray activities = (body["envelopes"] as JArray) ?? new JArray();
+      JArray filteredActivities = new JArray();
+      int top = string.IsNullOrEmpty(query.Get("top")) ? 3: int.Parse(query.Get("top"));
+      int skip = string.IsNullOrEmpty(query.Get("skip")) ? 0: int.Parse(query.Get("skip"));
+      
+      var crmOrgUrl = query.Get("crmOrgUrl") ?? null;
+      var recordId = query.Get("recordId") ?? null;
+      var crmType = "CRMToken";
+      string[] filters = { crmType, crmOrgUrl, recordId };
+
+      foreach (var filter in filters.Where(filter => filter != null)) 
+      {
+        foreach (var envelope in activities)
+        {
+          if (envelope.ToString().Contains(filter))
+          {
+            filteredActivities.Add(new JObject()
+            {
+              ["title"] = envelope["emailSubject"],
+              ["description"] = envelope["recipients"]["signers"][0]["name"] + ";" +
+                envelope["envelopeId"] + ";" + 
+                envelope["statusChangedDateTime"],
+              ["dateTime"] = envelope["statusChangedDateTime"],
+              ["url"] = envelope["envelopeUri"],
+              ["additionalProperties"] = envelope["recipients"]["signers"][0]["name"] + ";" +
+                envelope["sender"]["userName"] + ";" + 
+                envelope["envelopeId"] + ";" +
+                envelope["statusChangedDateTime"]
+            });
+          }
+        }
+
+        if (filteredActivities.Count > 0)
+        {
+          activities = new JArray(filteredActivities);
+          filteredActivities.Clear();
+        }
+      }
+
+      newBody["activities"] = (activities.Count < top) ? activities : new JArray(activities.Skip(skip).Take(top).ToArray());
+      newBody["hasMoreResults"] = (skip + top < activities.Count) ? true : false;
+
+      response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
+    }
+
+    if ("scp-get-related-records".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    {
+      var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
+      var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
+      JObject newBody = new JObject();
+
+      JArray documentRecords = (body["envelopes"] as JArray) ?? new JArray();
+      JArray filteredRecords = new JArray();
+      int top = string.IsNullOrEmpty(query.Get("top")) ? 3: int.Parse(query.Get("top"));
+      int skip = string.IsNullOrEmpty(query.Get("skip")) ? 0: int.Parse(query.Get("skip"));
+      
+      var crmOrgUrl = query.Get("crmOrgUrl") ?? null;
+      var recordId = query.Get("recordId") ?? null;
+      var crmType = "CRMToken";
+      string[] filters = { crmType, crmOrgUrl, recordId };
+
+      foreach (var filter in filters.Where(filter => filter != null)) 
+      {
+        foreach (var envelope in documentRecords)
+        {
+          if (envelope.ToString().Contains(filter))
+          {
+            filteredRecords.Add(new JObject()
+            {
+              ["title"] = envelope["emailSubject"],
+              ["description"] = envelope["recipients"]["signers"][0]["name"] + ";" +
+                envelope["envelopeId"] + ";" + 
+                envelope["statusChangedDateTime"],
+              ["dateTime"] = envelope["statusChangedDateTime"],
+              ["url"] = envelope["envelopeUri"],
+              ["additionalProperties"] = envelope["recipients"]["signers"][0]["name"] + ";" +
+                envelope["sender"]["userName"] + ";" + 
+                envelope["envelopeId"] + ";" +
+                envelope["statusChangedDateTime"]
+            });
+          }
+        }
+
+        if (filteredRecords.Count > 0)
+        {
+          documentRecords = new JArray(filteredRecords);
+          filteredRecords.Clear();
+        }
+      }
+
     }
 
     if ("GetRecipientFields".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))

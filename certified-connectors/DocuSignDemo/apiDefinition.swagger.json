@@ -1283,7 +1283,7 @@
           {
             "name": "recordType",
             "in": "query",
-            "required": false,              
+            "required": true,              
             "enum": [
               "account",
               "opportunity",
@@ -1294,29 +1294,34 @@
           {
             "name": "recordId",
             "in": "query",
-            "required": false,
+            "required": true,
             "type": "string"
           },
           {
             "name": "startDateTime",
+            "description": "Enter start date-time in the format: 2017-05-02T01:44Z",
             "in": "query",
             "type": "string",
+            "required": true,
             "format": "date-time"
           },
           {
             "name": "endDateTime",
+            "description": "Enter end date-time in the format: 2017-05-02T01:44Z",
             "in": "query",
             "type": "string",
             "format": "date-time"
           },
           {
             "name": "top",
+            "description": "Top envelopes to be returned",
             "in": "query",
             "type": "integer",
             "format": "int32"
           },
           {
             "name": "skip",
+            "description": "Envelopes to be skipped",
             "in": "query",
             "type": "integer",
             "format": "int32"
@@ -1325,7 +1330,6 @@
             "name": "crmType",
             "in": "query",
             "enum": [
-              "Salesforce",
               "Dynamics365"
             ],
             "type": "string"
@@ -1341,6 +1345,138 @@
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/ActivityListResponseEnvelope"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+                "$ref": "#/definitions/ApiError"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              } 
+            },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+              }
+            }
+          },
+        "x-ms-openai-data": {
+        "openai-enabled": true
+        }
+      }
+    },
+    "/accounts/{accountId}/envelopes/getRelatedRecords": {
+      "get": {
+        "tags": [
+          "DocuSign"
+        ],
+        "summary": "Sales Copilot: Get Related Records",
+        "description": "Sales Copilot: Get Related Records.",
+        "operationId": "scp-get-related-records",
+        "x-ms-no-generic-test": true,
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Account id",
+            "required": true,
+            "x-ms-summary": "Account",
+            "x-ms-test-value": "insert account id",
+            "x-ms-dynamic-values": {
+              "operationId": "GetLoginAccounts",
+              "value-collection": "loginAccounts",
+              "value-path": "accountIdGuid",
+              "value-title": "name"
+            },
+            "type": "string"
+          },
+          {
+            "name": "recordType",
+            "in": "query",
+            "required": true,              
+            "enum": [
+              "account",
+              "opportunity",
+              "lead"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "recordId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "top",
+            "description": "Top envelopes to be returned",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "skip",
+            "description": "Envelopes to be skipped",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "crmType",
+            "in": "query",
+            "enum": [
+              "Dynamics365"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "crmOrgUrl",
+            "in": "query",
+            "type": "string"
+          }           
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/DocumentRecordListResponseEnvelope"
             }
           },
           "400": {
@@ -4739,7 +4875,39 @@
         }
       },
       "additionalProperties": false
-    },    
+    },  
+    "DocumentRecord": {
+      "required": [
+        "recordId",
+        "recordTitle",
+        "recordTypeDisplayName"
+      ],
+      "type": "object",
+      "properties": {
+        "recordId": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "recordTypeDisplayName": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "recordTitle": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },  
     "Envelope": {
       "type": "object",
       "properties": {
@@ -4812,11 +4980,30 @@
     "ActivityListResponseEnvelope": {
       "type": "object",
       "properties": {
-        "value": {
+        "activities": {
+          "description": "Related activies",
           "type": "array",
           "items": {
             "$ref": "#/definitions/Activity"
-          }
+          },
+          "x-ms-summary": "Related activities"
+        },
+        "hasMoreResults": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DocumentRecordListResponseEnvelope": {
+      "type": "object",
+      "properties": {
+        "documentRecords": {
+          "description": "Related records",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentRecord"
+          },
+          "x-ms-summary": "Related records"
         },
         "hasMoreResults": {
           "type": "boolean"
