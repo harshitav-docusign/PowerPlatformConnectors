@@ -1359,6 +1359,11 @@ public class Script : ScriptBase
     return body;
   }
 
+  private string GetDescriptionNLPForRelatedActivities(JArray employee)
+  {
+    
+  }
+
   private void AddCoreRecipientParams(JArray signers, JObject body) 
   {
     var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
@@ -1793,7 +1798,7 @@ public class Script : ScriptBase
         query["from_date"] = query.Get("endDateTime");
       }
       
-      query["include"] = "custom_fields, recipients";
+      query["include"] = "custom_fields,recipients,documents";
       uriBuilder.Query = query.ToString();
       this.Context.Request.RequestUri = uriBuilder.Uri;
     }
@@ -2194,20 +2199,32 @@ public class Script : ScriptBase
         {
           if (envelope.ToString().Contains(filter))
           {
+            int recipientCount = envelope["recipients"]["recipientCount"].ToObject<int>();
+            var recipientCountInNaturalLanguage = (recipientCount > 1) ?
+               (" and " + (recipientCount - 1).ToString() + " others have ") : " "; 
+
+            JArray documentArray = (envelope["envelopeDocuments"] as JArray) ?? new JArray();
+            var documentCountInNaturalLanguage = (documentArray.Count > 1) ?
+              (" and " + (documentArray.Count - 1).ToString() + " other documents ") : " ";
+
+            var descriptionNLP = envelope["recipients"]["signers"][0]["name"] +
+               recipientCountInNaturalLanguage +
+               envelope["status"] + " " +
+               envelope["envelopeDocuments"][0]["name"] +
+               documentCountInNaturalLanguage + " on " +
+               envelope["statusChangedDateTime"];
+
             filteredActivities.Add(new JObject()
             {
               ["title"] = envelope["emailSubject"],
-              ["description"] = envelope["recipients"]["signers"][0]["name"] + "," +
-                envelope["status"] + " " +
-                envelope["envelopeId"] + " on " + 
-                envelope["statusChangedDateTime"],
+              ["description"] = descriptionNLP,
               ["dateTime"] = envelope["statusChangedDateTime"],
               ["url"] = envelope["envelopeUri"],
               ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
                 "Owner: " + envelope["sender"]["userName"] + ";" +
-                "Status reason: " +  envelope["status"] + ";" +
+                "Status: " +  envelope["status"] + ";" +
                 "EnvelopeId: " + envelope["envelopeId"] + ";" +
-                "Status changed date: " + envelope["statusChangedDateTime"]
+                "Date: " + envelope["statusChangedDateTime"]
             });
           }
         }
@@ -2258,7 +2275,7 @@ public class Script : ScriptBase
               ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
                 "Owner: " + envelope["sender"]["userName"] + ";" + 
                 "EnvelopeId: " + envelope["envelopeId"] + ";" +
-                "Status changed date: " + envelope["statusChangedDateTime"]
+                "Date: " + envelope["statusChangedDateTime"]
             });
           }
         }
