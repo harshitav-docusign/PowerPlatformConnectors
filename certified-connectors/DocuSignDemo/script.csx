@@ -1359,9 +1359,36 @@ public class Script : ScriptBase
     return body;
   }
 
-  private string GetDescriptionNLPForRelatedActivities(JArray employee)
+  private string GetDescriptionNLPForRelatedActivities(JToken envelope)
   {
+    string descriptionNLP = null;
+    int recipientCount = envelope["recipients"]["recipientCount"].ToObject<int>();
+    var recipientCountInNaturalLanguage = (recipientCount > 1) ?
+        (" and " + (recipientCount - 1).ToString() + " others have ") : " "; 
+
+    JArray documentArray = (envelope["envelopeDocuments"] as JArray) ?? new JArray();
+    var documentCountInNaturalLanguage = (documentArray.Count > 1) ?
+      (" and " + (documentArray.Count - 1).ToString() + " other documents ") : " ";
+
+    if (envelope["status"].Equals("sent", StringComparison.OrdinalIgnoreCase))
+    {
+      descriptionNLP = envelope["sender"]["userName"] + " " +
+        envelope["status"] + " " +
+        envelope["envelopeDocuments"][0]["name"] +
+        documentCountInNaturalLanguage + " on " +
+        envelope["statusChangedDateTime"];
+    }
+    else
+    {
+      descriptionNLP = envelope["recipients"]["signers"][0]["name"] +
+        recipientCountInNaturalLanguage +
+        envelope["status"] + " " +
+        envelope["envelopeDocuments"][0]["name"] +
+        documentCountInNaturalLanguage + " on " +
+        envelope["statusChangedDateTime"];
+    }
     
+    return descriptionNLP;
   }
 
   private void AddCoreRecipientParams(JArray signers, JObject body) 
@@ -2199,25 +2226,10 @@ public class Script : ScriptBase
         {
           if (envelope.ToString().Contains(filter))
           {
-            int recipientCount = envelope["recipients"]["recipientCount"].ToObject<int>();
-            var recipientCountInNaturalLanguage = (recipientCount > 1) ?
-               (" and " + (recipientCount - 1).ToString() + " others have ") : " "; 
-
-            JArray documentArray = (envelope["envelopeDocuments"] as JArray) ?? new JArray();
-            var documentCountInNaturalLanguage = (documentArray.Count > 1) ?
-              (" and " + (documentArray.Count - 1).ToString() + " other documents ") : " ";
-
-            var descriptionNLP = envelope["recipients"]["signers"][0]["name"] +
-               recipientCountInNaturalLanguage +
-               envelope["status"] + " " +
-               envelope["envelopeDocuments"][0]["name"] +
-               documentCountInNaturalLanguage + " on " +
-               envelope["statusChangedDateTime"];
-
             filteredActivities.Add(new JObject()
             {
               ["title"] = envelope["emailSubject"],
-              ["description"] = descriptionNLP,
+              ["description"] = GetDescriptionNLPForRelatedActivities(envelope),
               ["dateTime"] = envelope["statusChangedDateTime"],
               ["url"] = envelope["envelopeUri"],
               ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
