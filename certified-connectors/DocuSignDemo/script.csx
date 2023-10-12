@@ -1370,7 +1370,7 @@ public class Script : ScriptBase
     var documentCountInNaturalLanguage = (documentArray.Count > 1) ?
       (" and " + (documentArray.Count - 1).ToString() + " other documents ") : " ";
 
-    if (envelope["status"].Equals("sent", StringComparison.OrdinalIgnoreCase))
+    if (envelope["status"].Equals("sent"))
     {
       descriptionNLP = envelope["sender"]["userName"] + " " +
         envelope["status"] + " " +
@@ -1389,6 +1389,16 @@ public class Script : ScriptBase
     }
     
     return descriptionNLP;
+  }
+
+  private string GetEnvelopeUrl(JToken envelope)
+  {
+    var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
+    var envelopeUrl = uriBuilder.host.ToString().Contains("demo") ?
+      "https://apps-d.docusign.com/send/documents/details/" + envelope["envelopeId"] :
+      "https://app.docusign.com/documents/details/" + envelope["envelopeId"];
+
+    return envelopeUrl;
   }
 
   private void AddCoreRecipientParams(JArray signers, JObject body) 
@@ -2231,7 +2241,7 @@ public class Script : ScriptBase
               ["title"] = envelope["emailSubject"],
               ["description"] = GetDescriptionNLPForRelatedActivities(envelope),
               ["dateTime"] = envelope["statusChangedDateTime"],
-              ["url"] = envelope["envelopeUri"],
+              ["url"] = GetEnvelopeUrl(envelope),
               ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
                 "Owner: " + envelope["sender"]["userName"] + ";" +
                 "Status: " +  envelope["status"] + ";" +
@@ -2283,7 +2293,7 @@ public class Script : ScriptBase
               ["recordTypePluralDisplayName"] = "Agreements",
               ["recordType"] = "Agreement",
               ["recordTitle"] = envelope["emailSubject"],
-              ["url"] = envelope["envelopeUri"],
+              ["url"] = GetEnvelopeUrl(envelope),
               ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
                 "Owner: " + envelope["sender"]["userName"] + ";" + 
                 "EnvelopeId: " + envelope["envelopeId"] + ";" +
