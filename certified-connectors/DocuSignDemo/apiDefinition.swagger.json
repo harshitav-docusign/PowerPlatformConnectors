@@ -5013,7 +5013,7 @@
     "ActivityListResponseEnvelope": {
       "type": "object",
       "properties": {
-        "values1": {
+        "value": {
           "description": "Related activies",
           "type": "array",
           "items": {
