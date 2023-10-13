@@ -3,6 +3,10 @@
   "info": {
     "version": "1.0",
     "title": "DocuSign Demo",
+    "x-ms-keywords": [
+      "DocuSign",
+      "Docu Sign"
+      ],
     "description": "DocuSign helps organizations connect and automate how they prepare, sign, act on, and manage agreements. The DocuSign Demo connector connects only to DocuSign Demo environments but offers the same functionality as the regular DocuSign connector. Any documents in a DocuSign Demo environment are not legally binding. For all non-demo uses, use the regular DocuSign connector.",
     "x-ms-deployment-version": "1.0.0",
     "x-ms-api-annotation": {
@@ -1242,14 +1246,16 @@
         },
         "deprecated": false,
         "x-ms-visibility": "important"
-      },
+      }
+    },
+    "/accounts/salesCopilotAccount/envelopes/getRelatedActivities": {
       "get": {
         "tags": [
           "DocuSign"
         ],
         "summary": "Sales Copilot: Get Related Activities",
         "description": "Sales Copilot: Get Related Activities.",
-        "operationId": "scp-get-related-activites",
+        "operationId": "scp-get-related-activities",
         "x-ms-no-generic-test": true,
         "consumes": [
           "application/json",
@@ -1267,9 +1273,9 @@
         "parameters": [
           {
             "name": "accountId",
-            "in": "path",
+            "in": "query",
             "description": "Account id",
-            "required": true,
+            "required": false,
             "x-ms-summary": "Account",
             "x-ms-test-value": "insert account id",
             "x-ms-dynamic-values": {
@@ -1302,7 +1308,7 @@
             "description": "Enter start date-time in the format: 2017-05-02T01:44Z",
             "in": "query",
             "type": "string",
-            "required": true,
+            "required": false,
             "format": "date-time"
           },
           {
@@ -1389,7 +1395,7 @@
         }
       }
     },
-    "/accounts/{accountId}/envelopes/getRelatedRecords": {
+    "/accounts/salesCopilotAccount/envelopes/getRelatedRecords": {
       "get": {
         "tags": [
           "DocuSign"
@@ -1414,9 +1420,9 @@
         "parameters": [
           {
             "name": "accountId",
-            "in": "path",
+            "in": "query",
             "description": "Account id",
-            "required": true,
+            "required": false,
             "x-ms-summary": "Account",
             "x-ms-test-value": "insert account id",
             "x-ms-dynamic-values": {
@@ -1449,7 +1455,7 @@
             "description": "Enter start date-time in the format: 2017-05-02T01:44Z",
             "in": "query",
             "type": "string",
-            "required": true,
+            "required": false,
             "format": "date-time"
           },
           {
@@ -2850,7 +2856,7 @@
         "deprecated": false,
         "x-ms-visibility": "important",
         "x-ms-no-generic-test": true
-      },
+      }
     },
     "/login_information": {
       "get": {
@@ -4879,7 +4885,13 @@
           "type": "string"
         },
         "additionalProperties": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "x-ms-summary": "Additional Properties"
         }
       },
       "additionalProperties": false
@@ -4888,7 +4900,9 @@
       "required": [
         "recordId",
         "recordTitle",
-        "recordTypeDisplayName"
+        "recordTypeDisplayName",
+        "recordTypePluralDisplayName",
+        "recordType"
       ],
       "type": "object",
       "properties": {
@@ -4916,9 +4930,15 @@
           "type": "string"
         },
         "additionalProperties": {
-          "type": "string"
-          }
-        },
+          "type": "object",
+          "properties": {
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "x-ms-summary": "Additional Properties"
+        }
+      },
       "additionalProperties": false
     },  
     "Envelope": {
@@ -4993,7 +5013,7 @@
     "ActivityListResponseEnvelope": {
       "type": "object",
       "properties": {
-        "activities": {
+        "values1": {
           "description": "Related activies",
           "type": "array",
           "items": {
@@ -5010,7 +5030,7 @@
     "DocumentRecordListResponseEnvelope": {
       "type": "object",
       "properties": {
-        "documentRecords": {
+        "value": {
           "description": "Related records",
           "type": "array",
           "items": {

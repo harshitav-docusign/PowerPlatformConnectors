@@ -1394,7 +1394,7 @@ public class Script : ScriptBase
   private string GetEnvelopeUrl(JToken envelope)
   {
     var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
-    var envelopeUrl = uriBuilder.host.ToString().Contains("demo") ?
+    var envelopeUrl = uriBuilder.Uri.ToString().Contains("demo") ?
       "https://apps-d.docusign.com/send/documents/details/" + envelope["envelopeId"] :
       "https://app.docusign.com/documents/details/" + envelope["envelopeId"];
 
@@ -1820,19 +1820,20 @@ public class Script : ScriptBase
       this.Context.Request.Content = CreateJsonContent(newBody.ToString());
     }
 
-    if("scp-get-related-activites".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    if("scp-get-related-activities".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
     {
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
-
+      uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedActivities", "");
+      uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", query["accountId"]);
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
-      if (!string.IsNullOrEmpty(query.Get("startDateTime")))
-      {
-        query["from_date"] = query.Get("startDateTime");
-      }
+      query["from_date"] = string.IsNullOrEmpty(query.Get("startDateTime")) ? 
+        DateTime.UtcNow.AddDays(-7).ToString() :
+        query.Get("startDateTime");
+      
       if (!string.IsNullOrEmpty(query.Get("endDateTime")))
       {
-        query["from_date"] = query.Get("endDateTime");
+        query["to_date"] = query.Get("endDateTime");
       }
       
       query["include"] = "custom_fields,recipients,documents";
@@ -1845,12 +1846,12 @@ public class Script : ScriptBase
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
       uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedRecords", "");
+      uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", query["accountId"]);
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
 
-      if (!string.IsNullOrEmpty(query.Get("startDateTime")))
-      {
-        query["from_date"] = query.Get("startDateTime");
-      }
+      query["from_date"] = string.IsNullOrEmpty(query.Get("startDateTime")) ? 
+        DateTime.UtcNow.AddDays(-7).ToString() :
+        query.Get("startDateTime");
 
       query["include"] = "custom_fields, recipients, documents";
       uriBuilder.Query = query.ToString();
@@ -2214,7 +2215,7 @@ public class Script : ScriptBase
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
     }
 
-    if ("scp-get-related-activites".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    if ("scp-get-related-activities".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
     {
       var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
@@ -2242,11 +2243,7 @@ public class Script : ScriptBase
               ["description"] = GetDescriptionNLPForRelatedActivities(envelope),
               ["dateTime"] = envelope["statusChangedDateTime"],
               ["url"] = GetEnvelopeUrl(envelope),
-              ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
-                "Owner: " + envelope["sender"]["userName"] + ";" +
-                "Status: " +  envelope["status"] + ";" +
-                "EnvelopeId: " + envelope["envelopeId"] + ";" +
-                "Date: " + envelope["statusChangedDateTime"]
+              ["additionalProperties"] = envelope["recipients"]["signers"][0]["name"].ToString()
             });
           }
         }
@@ -2286,6 +2283,11 @@ public class Script : ScriptBase
         {
           if (envelope.ToString().Contains(filter))
           {
+            Dictionary<string, string> additionalPropertiesForActivity = new Dictionary<string, string>();
+            additionalPropertiesForActivity.Add("Recipient", envelope["recipients"]["signers"][0]["name"].ToString());
+            additionalPropertiesForActivity.Add("Owner", envelope["sender"]["userName"].ToString());
+            additionalPropertiesForActivity.Add("EnvelopeId", envelope["envelopeId"].ToString());
+            additionalPropertiesForActivity.Add("Date", envelope["statusChangedDateTime"].ToString());
             filteredRecords.Add(new JObject()
             {
               ["recordId"] = envelope["envelopeId"],
@@ -2294,10 +2296,7 @@ public class Script : ScriptBase
               ["recordType"] = "Agreement",
               ["recordTitle"] = envelope["emailSubject"],
               ["url"] = GetEnvelopeUrl(envelope),
-              ["additionalProperties"] = "Recipient: " + envelope["recipients"]["signers"][0]["name"] + ";" +
-                "Owner: " + envelope["sender"]["userName"] + ";" + 
-                "EnvelopeId: " + envelope["envelopeId"] + ";" +
-                "Date: " + envelope["statusChangedDateTime"]
+              ["additionalProperties"] = JObject.FromObject(additionalPropertiesForActivity)
             });
           }
         }
@@ -2309,7 +2308,7 @@ public class Script : ScriptBase
         }
       }
 
-      newBody["documentRecords"] = (documentRecords.Count < top) ? documentRecords : new JArray(documentRecords.Skip(skip).Take(top).ToArray());
+      newBody["value"] = (documentRecords.Count < top) ? documentRecords : new JArray(documentRecords.Skip(skip).Take(top).ToArray());
       newBody["hasMoreResults"] = (skip + top < documentRecords.Count) ? true : false;
 
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
