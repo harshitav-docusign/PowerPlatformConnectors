@@ -1272,21 +1272,6 @@
         ],
         "parameters": [
           {
-            "name": "accountId",
-            "in": "query",
-            "description": "Account id",
-            "required": false,
-            "x-ms-summary": "Account",
-            "x-ms-test-value": "insert account id",
-            "x-ms-dynamic-values": {
-              "operationId": "GetLoginAccounts",
-              "value-collection": "loginAccounts",
-              "value-path": "accountIdGuid",
-              "value-title": "name"
-            },
-            "type": "string"
-          },
-          {
             "name": "recordType",
             "in": "query",
             "required": true,              
@@ -1418,21 +1403,6 @@
           "text/xml"
         ],
         "parameters": [
-          {
-            "name": "accountId",
-            "in": "query",
-            "description": "Account id",
-            "required": false,
-            "x-ms-summary": "Account",
-            "x-ms-test-value": "insert account id",
-            "x-ms-dynamic-values": {
-              "operationId": "GetLoginAccounts",
-              "value-collection": "loginAccounts",
-              "value-path": "accountIdGuid",
-              "value-title": "name"
-            },
-            "type": "string"
-          },
           {
             "name": "recordType",
             "in": "query",

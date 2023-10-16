@@ -1646,9 +1646,19 @@ public class Script : ScriptBase
       {
         var jsonContent = JObject.Parse(content);
         var baseUri = jsonContent["accounts"]?[0]?["base_uri"]?.ToString();
+        var accountId = (string)jsonContent["accounts"].Where(a => (bool)a["is_default"]).FirstOrDefault()["account_id"];
         if (!string.IsNullOrEmpty(baseUri))
         {
           this.Context.Request.RequestUri = new Uri(new Uri(baseUri), this.Context.Request.RequestUri.PathAndQuery);
+        }
+        else
+        {
+          throw new ConnectorException(HttpStatusCode.BadGateway, "Unable to get User's API endpoint from the response: " + content);
+        }
+
+        if (!string.IsNullOrEmpty(accountId))
+        { 
+          this.Context.Request.Headers.Add("AccountId", accountId);
         }
         else
         {
@@ -1825,7 +1835,7 @@ public class Script : ScriptBase
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
       uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedActivities", "");
-      uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", query["accountId"]);
+      uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", this.Context.Request.Headers.GetValues("AccountId").FirstOrDefault());
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
       query["from_date"] = string.IsNullOrEmpty(query.Get("startDateTime")) ? 
         DateTime.UtcNow.AddDays(-7).ToString() :
@@ -1846,7 +1856,7 @@ public class Script : ScriptBase
       var uriBuilder = new UriBuilder(this.Context.Request.RequestUri);
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
       uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedRecords", "");
-      uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", query["accountId"]);
+      uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", this.Context.Request.Headers.GetValues("AccountId").FirstOrDefault());
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
 
       query["from_date"] = string.IsNullOrEmpty(query.Get("startDateTime")) ? 
