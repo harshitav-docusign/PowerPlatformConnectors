@@ -1836,6 +1836,9 @@ public class Script : ScriptBase
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
       uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedActivities", "");
       uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", this.Context.Request.Headers.GetValues("AccountId").FirstOrDefault());
+      this.Context.Request.Headers.Add("x-ms-client-request-id", Guid.NewGuid().ToString());
+      this.Context.Request.Headers.Add("x-ms-user-agent", "sales-copilot");
+
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
       query["from_date"] = string.IsNullOrEmpty(query.Get("startDateTime")) ? 
         DateTime.UtcNow.AddDays(-7).ToString() :
@@ -1857,6 +1860,9 @@ public class Script : ScriptBase
       var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
       uriBuilder.Path = uriBuilder.Path.Replace("/getRelatedRecords", "");
       uriBuilder.Path = uriBuilder.Path.Replace("salesCopilotAccount", this.Context.Request.Headers.GetValues("AccountId").FirstOrDefault());
+      this.Context.Request.Headers.Add("x-ms-client-request-id", Guid.NewGuid().ToString());
+      this.Context.Request.Headers.Add("x-ms-user-agent", "sales-copilot");
+
       query["custom_field"] = "entityLogicalName=" + query.Get("recordType");
 
       query["from_date"] = string.IsNullOrEmpty(query.Get("startDateTime")) ? 
