@@ -2271,8 +2271,9 @@ public class Script : ScriptBase
       var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
       JObject newBody = new JObject();
       JArray formFields = new JArray();
+      JArray docGenFormfields = (body["docGenFormFields"] as JArray) ?? new JArray();
 
-      foreach (var doc in (body["docGenFormFields"] as JArray) ?? new JArray())
+      foreach (var doc in docGenFormfields)
       {
         foreach(var field in (doc["docGenFormFieldList"] as JArray) ?? new JArray())
         {
@@ -2284,6 +2285,15 @@ public class Script : ScriptBase
             ["label"] =  field["label"],
             ["documentId"] =  doc["documentId"]
           });
+
+          if (field["type"].ToString().Equals("tableRow"))
+          {
+            foreach(var rowValue in (doc["RowValues"] as JArray) ?? new JArray())
+            {
+              JArray tableRowDocGenFormFieldList = (rowValue["docGenFormFieldList"] as JArray) ?? new JArray();
+              docGenFormfields.Merge(tableRowDocGenFormFieldList);
+            }
+          }
         }
       }
 
