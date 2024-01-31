@@ -128,7 +128,7 @@ public class Script : ScriptBase
       string [,] signatureTypes = { 
         { "UniversalSignaturePen_ImageOnly" , "DS Electronic (SES)" }, 
         { "UniversalSignaturePen_OpenTrust_Hash_TSP", "DS EU Advanced (AES)" }, 
-        { "idv_docusign_eu_qualified", "DS EU Qualified (QES)" }
+        { "docusign_eu_qualified", "DS EU Qualified (QES)" }
       };
 
       for (var i = 0; i < signatureTypes.GetLength(0); i++)
@@ -462,6 +462,16 @@ public class Script : ScriptBase
           ["type"] = "string",
           ["x-ms-summary"] = "* AES Method Value",
           ["description"] = "AES Method Value"
+        };
+      }
+
+      if (signatureType.Equals("docusign_eu_qualified", StringComparison.OrdinalIgnoreCase))
+      {
+        response["schema"]["properties"]["signatureProviderName"] = new JObject
+        {
+          ["type"] = "string",
+          ["x-ms-summary"] = "* Signature Provider Name",
+          ["description"] = "Signature Provider Name"
         };
       }
 
@@ -1548,6 +1558,22 @@ public class Script : ScriptBase
     var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
     var signatureType = query.Get("signatureType");
 
+    if (signatureType.ToString().Equals("docusign_eu_qualified"))
+    {
+      var signatureProviderMap = new Dictionary<string, string>() {
+        {"IDnow - EU Qualified (RESELL)", "docusign_eu_qualified_idnow_tsp"},
+        {"A-Trust QES", ""},
+        {"IDV - DS EU Qualified", ""},
+        {"itsme - EU Qualified Multidoc", ""},
+        {"Signer Held EU Qualified", ""},
+        {"Swisscom - EU - QES – Resell", ""},
+        {"Trans Sped SAFE/eIDAS digital certificate", ""},
+        {"ZealiD - QES", ""}
+      };
+
+      signatureType = signatureProviderMap[body["signatureProviderName"].ToString()];
+    }
+
     var recipientSignatureProviders = new JArray
     {
         new JObject
@@ -2186,6 +2212,25 @@ public class Script : ScriptBase
 
       newBody["tabs"] = tabs;
 
+      response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
+    }
+
+    if ("GetSignatureProviders".Equals(this.Context.OperationId, StringComparison.OrdinalIgnoreCase))
+    {
+      var body = ParseContentAsJObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), false);
+      var newBody = new JObject();
+      JArray signatureProviders = new JArray();
+      
+      foreach(var providerType in (body["signatureProviders"] as JArray) ?? new JArray())
+      {
+        signatureProviders.Add(new JObject()
+        {
+          ["signatureProviderName"] = providerType["signatureProviderName"],
+          ["signatureProviderDisplayName"] = providerType["signatureProviderDisplayName"]
+        });
+      } 
+
+      newBody["signatureProviders"] = signatureProviders;
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
     }
 

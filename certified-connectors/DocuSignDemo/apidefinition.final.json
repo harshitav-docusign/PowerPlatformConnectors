@@ -1,0 +1,448 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "DocuSign Demo",
+    "x-ms-keywords": "DocuSign Demo",
+    "description": "DocuSign helps organizations connect and automate how they prepare, sign, act on, and manage agreements. The DocuSign Demo connector connects only to DocuSign Demo environments but offers the same functionality as the regular DocuSign connector. Any documents in a DocuSign Demo environment are not legally binding. For all non-demo uses, use the regular DocuSign connector.",
+    "x-ms-deployment-version": "1.0.0",
+    "x-ms-api-annotation": {
+      "status": "Preview"
+    },
+    "contact": {
+      "name": "docusign",
+      "url": "https://support.docusign.com"
+    }
+  },
+  "host": "demo.docusign.net",
+  "basePath": "/restapi/v2.1",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/accounts/salesCopilotAccount/envelopes/getRelatedActivities": {
+      "get": {
+        "tags": [
+          "DocuSign"
+        ],
+        "summary": "Sales Copilot: Get related activities",
+        "description": "Sales Copilot: Get related activities.",
+        "operationId": "scp-get-related-activities",
+        "x-ms-no-generic-test": true,
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "recordType",
+            "x-ms-summary": "Record type",
+            "description": "Select record type",
+            "in": "query",
+            "required": true,
+            "enum": [
+              "account",
+              "opportunity",
+              "lead"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "recordId",
+            "x-ms-summary": "Record Id",
+            "description": "Record Id",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startDateTime",
+            "x-ms-summary": "Start date",
+            "description": "Enter start date-time in the format: 2017-05-02T01:44Z",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "format": "date-time"
+          },
+          {
+            "name": "endDateTime",
+            "x-ms-summary": "End date",
+            "description": "Enter end date-time in the format: 2017-05-02T01:44Z",
+            "in": "query",
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "top",
+            "x-ms-summary": "Top",
+            "description": "Top envelopes to be returned",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "skip",
+            "x-ms-summary": "Skip",
+            "description": "Envelopes to be skipped",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "crmType",
+            "x-ms-summary": "CRM type",
+            "description": "CRM type",
+            "in": "query",
+            "enum": [
+              "Dynamics365",
+              "Salesforce"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "crmOrgUrl",
+            "x-ms-summary": "CRM org URL",
+            "description": "CRM org URL",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ActivityListResponseEnvelope"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "/accounts/salesCopilotAccount/envelopes/getRelatedRecords": {
+      "get": {
+        "tags": [
+          "DocuSign"
+        ],
+        "summary": "Sales Copilot: Get related records",
+        "description": "Sales Copilot: Get related records.",
+        "operationId": "scp-get-related-records",
+        "x-ms-no-generic-test": true,
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "recordType",
+            "in": "query",
+            "x-ms-summary": "Record type",
+            "description": "Select record type",
+            "required": true,
+            "enum": [
+              "account",
+              "opportunity",
+              "lead"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "recordId",
+            "x-ms-summary": "Record Id",
+            "description": "Record Id",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startDateTime",
+            "x-ms-summary": "Start date",
+            "description": "Enter start date-time in the format: 2017-05-02T01:44Z",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "format": "date-time"
+          },
+          {
+            "name": "top",
+            "x-ms-summary": "Top",
+            "description": "Top envelopes to be returned",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "skip",
+            "x-ms-summary": "Skip",
+            "description": "Envelopes to be skipped",
+            "in": "query",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "crmType",
+            "x-ms-summary": "CRM type",
+            "description": "CRM type",
+            "in": "query",
+            "enum": [
+              "Dynamics365",
+              "Salesforce"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "crmOrgUrl",
+            "x-ms-summary": "CRM org URL",
+            "description": "CRM org URL",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/DocumentRecordListResponseEnvelope"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Activity": {
+      "required": [
+        "dateTime",
+        "description",
+        "title"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "minLength": 1,
+          "x-ms-summary": "Title",
+          "description": "Title of the activity",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "x-ms-summary": "Description",
+          "description": "Description of the activity",
+          "type": "string"
+        },
+        "dateTime": {
+          "type": "string",
+          "x-ms-summary": "DateTime",
+          "description": "Last status update of the activity",
+          "format": "date-time"
+        },
+        "url": {
+          "type": "string",
+          "x-ms-summary": "URL",
+          "description": "URL of the envelope"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "additionalProperties": {
+              "type": "string",
+              "x-ms-summary": "Additional Properties",
+              "description": "Additional properties of the activity"
+            }
+          },
+          "x-ms-summary": "Additional Properties",
+          "description": "Additional properties of the activity"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DocumentRecord": {
+      "required": [
+        "recordId",
+        "recordTitle",
+        "recordTypeDisplayName",
+        "recordTypePluralDisplayName",
+        "recordType"
+      ],
+      "type": "object",
+      "properties": {
+        "recordId": {
+          "minLength": 1,
+          "x-ms-summary": "Record Id",
+          "description": "Record Id",
+          "type": "string"
+        },
+        "recordTypeDisplayName": {
+          "minLength": 1,
+          "x-ms-summary": "Record type display name",
+          "description": "Record type display name",
+          "type": "string"
+        },
+        "recordTypePluralDisplayName": {
+          "minLength": 1,
+          "x-ms-summary": "Record type display name in plural",
+          "description": "Record type display name in plural",
+          "type": "string"
+        },
+        "recordType": {
+          "minLength": 1,
+          "x-ms-summary": "Record type",
+          "description": "Record type",
+          "type": "string"
+        },
+        "recordTitle": {
+          "minLength": 1,
+          "x-ms-summary": "Record title",
+          "description": "Record title",
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "x-ms-summary": "Url of the envelope",
+          "description": "Url of the envelope"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "additionalProperties": {
+              "type": "string",
+              "x-ms-summary": "Additional Properties",
+              "description": "Additional Properties"
+            }
+          },
+          "x-ms-summary": "Additional Properties",
+          "description": "Additional Properties"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ActivityListResponseEnvelope": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Related activies",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Activity"
+          },
+          "x-ms-summary": "Related activities"
+        },
+        "hasMoreResults": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DocumentRecordListResponseEnvelope": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Related records",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentRecord"
+          },
+          "x-ms-summary": "Related records"
+        },
+        "hasMoreResults": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiError": {
+      "required": [
+        "errorCode"
+      ],
+      "type": "object",
+      "properties": {
+        "errorCode": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "errorMessage": {
+          "type": "string"
+        },
+        "activityId": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "x-ms-docs": [
+    {
+      "url": "https://ms.flow.microsoft.com/en-us/blog/docusign-streamline-process/",
+      "description": "Streamline document signing and on-boarding processes"
+    }
+  ],
+  "x-ms-capabilities": {
+    "testConnection": {
+      "operationId": "GetLoginAccounts"
+    }
+  },
+  "x-ms-connector-metadata": [
+    {
+      "propertyName": "Website",
+      "propertyValue": "https://www.docusign.com"
+    },
+    {
+      "propertyName": "Privacy policy",
+      "propertyValue": "https://www.docusign.com/company/privacy-policy"
+    },
+    {
+      "propertyName": "Categories",
+      "propertyValue": "Content and Files;Productivity"
+    }
+  ]
+}

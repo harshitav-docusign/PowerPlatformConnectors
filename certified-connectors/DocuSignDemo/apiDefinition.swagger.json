@@ -624,6 +624,40 @@
         "x-ms-visibility": "advanced"
       }
     },
+    "/accounts/{accountId}/signatureProviders": {
+      "get": {
+        "summary": "Get signature providers from account",
+        "description": "Get signature providers from account",
+        "operationId": "GetSignatureProviders",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Account id",
+            "required": true,
+            "x-ms-summary": "Account",
+            "x-ms-test-value": "insert account id",
+            "x-ms-dynamic-values": {
+              "operationId": "GetLoginAccounts",
+              "value-collection": "loginAccounts",
+              "value-path": "accountIdGuid",
+              "value-title": "name"
+            },
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "default",
+            "schema": {
+              "$ref": "#/definitions/SignatureProviderResponse"
+            }
+          }
+        },
+        "deprecated": false,
+        "x-ms-visibility": "advanced"
+      }
+    },
     "/accounts/{accountId}/envelopes/{envelopeId}/documents/{documentId}/tabs": {
       "get": {
         "summary": "Get document tabs from envelope",
@@ -5383,6 +5417,19 @@
         }
       }
     },
+    "SignatureProviderResponse": {
+      "type": "object",
+      "properties": {
+        "signatureProviders": {
+          "description": "Signature Providers",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SignatureProvider"
+          },
+          "x-ms-summary": "Signature Providers"
+        }
+      }
+    },
     "ListEnvelopeDocumentFieldsResponse": {
       "type": "object",
       "properties": {
@@ -5805,6 +5852,21 @@
           "type": "string",
           "x-ms-summary": "Tab Type",
           "x-ms-visibility": "advanced"
+        }
+      }
+    },
+    "SignatureProvider": {
+      "type": "object",
+      "properties": {
+        "signatureProviderName": {
+          "description": "The name of the signature provider.",
+          "type": "string",
+          "x-ms-summary": "signatureProviderName"
+        },
+        "signatureProviderDisplayName": {
+          "description": "The display name of the signature provider.",
+          "type": "string",
+          "x-ms-summary": "signatureProviderDisplayName"
         }
       }
     },
