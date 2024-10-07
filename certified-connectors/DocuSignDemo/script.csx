@@ -4117,13 +4117,13 @@ public class Script : ScriptBase
         ["x-ms-sort"] = "none",
       };
 
-      foreach (var recipient in body.Properties())
+      foreach (var recipientTypes in body.Properties())
       {
-        var signers = (body[recipient.Name] as JArray) ?? new JArray();
+        var recipients = (body[recipientTypes.Name] as JArray) ?? new JArray();
 
-        foreach (var signer in signers)
+        foreach (var recipient in recipients)
         {
-          var roleName = signer["roleName"];
+          var roleName = recipient["roleName"];
           itemProperties[roleName + " Name"] = basePropertyDefinition.DeepClone();
           itemProperties[roleName + " Email"] = basePropertyDefinition.DeepClone();
         }
