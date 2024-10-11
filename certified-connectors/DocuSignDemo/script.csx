@@ -3697,17 +3697,27 @@ public class Script : ScriptBase
           {
             ["name"] =  field["name"],
             ["type"] =  field["type"],
-            ["value"] =  field["value"],
+            ["value"] = field["value"],
             ["label"] =  field["label"],
             ["documentId"] =  doc["documentId"]
           });
-
-          if (field["type"].ToString().Equals("tableRow"))
+        
+          if (field["type"].ToString().Equals("TableRow"))
           {
-            foreach(var rowValue in (doc["RowValues"] as JArray) ?? new JArray())
+            JArray rowValues = (field["rowValues"] as JArray) ?? new JArray();
+            foreach(var docGenTable in rowValues)
             {
-              JArray tableRowDocGenFormFieldList = (rowValue["docGenFormFieldList"] as JArray) ?? new JArray();
-              docGenFormfields.Merge(tableRowDocGenFormFieldList);
+              foreach(var tableValue in (docGenTable["docGenFormFieldList"] as JArray) ?? new JArray())
+              {
+                formFields.Add(new JObject()
+                {
+                  ["name"] =  tableValue["name"],
+                  ["type"] =  tableValue["type"],
+                  ["value"] = tableValue["value"],
+                  ["label"] =  tableValue["label"],
+                  ["documentId"] =  doc["documentId"]
+                });  
+              }
             }
           }
         }
