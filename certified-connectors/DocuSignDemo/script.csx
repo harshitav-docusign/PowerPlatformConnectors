@@ -2630,6 +2630,32 @@ public class Script : ScriptBase
     return accountServerBaseUri;
   }
 
+  private JArray GetFormFields(JArray docGenFormfields, JArray formFields)
+  {
+    foreach (var doc in docGenFormfields)
+    {
+      foreach(var field in (doc["docGenFormFieldList"] as JArray) ?? new JArray())
+      {
+        formFields.Add(new JObject()
+        {
+          ["name"] =  field["name"],
+          ["type"] =  field["type"],
+          ["value"] = field["value"],
+          ["label"] =  field["label"],
+          ["documentId"] =  doc["documentId"]
+        });
+
+        if (field["type"].ToString().Equals("TableRow"))
+        {
+          JArray rowValues = (field["rowValues"] as JArray) ?? new JArray();
+          formFields = GetFormFields(rowValues, formFields);
+        }
+      }
+    }
+
+    return formFields;
+  }
+
   private void AddCoreRecipientParams(JArray signers, JObject body) 
   {
     var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
@@ -3689,39 +3715,7 @@ public class Script : ScriptBase
       JArray formFields = new JArray();
       JArray docGenFormfields = (body["docGenFormFields"] as JArray) ?? new JArray();
 
-      foreach (var doc in docGenFormfields)
-      {
-        foreach(var field in (doc["docGenFormFieldList"] as JArray) ?? new JArray())
-        {
-          formFields.Add(new JObject()
-          {
-            ["name"] =  field["name"],
-            ["type"] =  field["type"],
-            ["value"] = field["value"],
-            ["label"] =  field["label"],
-            ["documentId"] =  doc["documentId"]
-          });
-        
-          if (field["type"].ToString().Equals("TableRow"))
-          {
-            JArray rowValues = (field["rowValues"] as JArray) ?? new JArray();
-            foreach(var docGenTable in rowValues)
-            {
-              foreach(var tableValue in (docGenTable["docGenFormFieldList"] as JArray) ?? new JArray())
-              {
-                formFields.Add(new JObject()
-                {
-                  ["name"] =  tableValue["name"],
-                  ["type"] =  tableValue["type"],
-                  ["value"] = tableValue["value"],
-                  ["label"] =  tableValue["label"],
-                  ["documentId"] =  doc["documentId"]
-                });  
-              }
-            }
-          }
-        }
-      }
+      formFields = GetFormFields(docGenFormfields, formFields);
 
       newBody["docgenFields"] = formFields;
       response.Content = new StringContent(newBody.ToString(), Encoding.UTF8, "application/json");
