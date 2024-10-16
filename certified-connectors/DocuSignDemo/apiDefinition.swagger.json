@@ -589,7 +589,7 @@
               "Portfolio : Get envelope documents as a PDF Portfolio"
             ]
           }
-         ],
+        ],
         "responses": {
           "200": {
             "description": "default",
@@ -778,7 +778,7 @@
             "required": false,
             "x-ms-summary": "Expire After",
             "type": "string"
-           }
+          }
         ],
         "responses": {
           "200": {
@@ -844,26 +844,26 @@
         "x-ms-visibility": "advanced"
       },
       "put": {
-        "tags":[
+        "tags": [
           "DocuSign"
         ],
         "summary": "Update envelope prefill tabs",
         "description": "Update values for a list of prefill tabs",
         "operationId": "UpdateEnvelopePrefillTabs",
-        "consumes":[
+        "consumes": [
           "application/json",
           "text/json",
           "application/xml",
           "text/xml",
           "application/x-www-form-urlencoded"
         ],
-        "produces":[
+        "produces": [
           "application/json",
           "text/json",
           "application/xml",
           "text/xml"
         ],
-        "parameters":[
+        "parameters": [
           {
             "name": "accountId",
             "in": "path",
@@ -932,7 +932,7 @@
             "description": "OK"
           }
         },
-        "deprecated":false,
+        "deprecated": false,
         "x-ms-visibility": "important",
         "x-ms-no-generic-test": true
       }
@@ -1294,19 +1294,19 @@
           "400": {
             "description": "Bad Request",
             "schema": {
-                "$ref": "#/definitions/ApiError"
+              "$ref": "#/definitions/ApiError"
             }
           },
           "500": {
             "description": "Server Error",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
             }
-          },
-          "x-ms-openai-data": {
-            "openai-enabled": true
           }
+        },
+        "x-ms-openai-data": {
+          "openai-enabled": true
+        }
       }
     },
     "/accounts/salesCopilotAccount/envelopes/getRelatedRecords": {
@@ -1407,25 +1407,25 @@
           "400": {
             "description": "Bad Request",
             "schema": {
-                "$ref": "#/definitions/ApiError"
+              "$ref": "#/definitions/ApiError"
             }
           },
           "401": {
             "description": "Unauthorized",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
-            },
+            }
+          },
           "500": {
             "description": "Server Error",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
             }
-          },
-          "x-ms-openai-data": {
-            "openai-enabled": true
           }
+        },
+        "x-ms-openai-data": {
+          "openai-enabled": true
+        }
       }
     },
     "/accounts/salesCopilotAccount/envelopes/getKeySales": {
@@ -1527,25 +1527,25 @@
           "400": {
             "description": "Bad Request",
             "schema": {
-                "$ref": "#/definitions/ApiError"
+              "$ref": "#/definitions/ApiError"
             }
           },
           "401": {
             "description": "Unauthorized",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
-            },
+            }
+          },
           "500": {
             "description": "Server Error",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
             }
-          },
-          "x-ms-openai-data": {
-            "openai-enabled": true
           }
+        },
+        "x-ms-openai-data": {
+          "openai-enabled": true
+        }
       }
     },
     "/accounts/salesCopilotAccount/envelopes/getEmailSummary": {
@@ -1644,25 +1644,25 @@
           "400": {
             "description": "Bad Request",
             "schema": {
-                "$ref": "#/definitions/ApiError"
+              "$ref": "#/definitions/ApiError"
             }
           },
           "401": {
             "description": "Unauthorized",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
-            },
+            }
+          },
           "500": {
             "description": "Server Error",
             "schema": {
               "$ref": "#/definitions/ApiError"
-              }
             }
-          },
-          "x-ms-openai-data": {
-            "openai-enabled": true
           }
+        },
+        "x-ms-openai-data": {
+          "openai-enabled": true
+        }
       }
     },
     "/accounts/copilotAccount/envelopes/listEnvelopes": {
@@ -2285,20 +2285,20 @@
           },
           {
             "name": "emailSubject",
-            "in":"query",
+            "in": "query",
             "description": "Email subject",
-            "required":false,
+            "required": false,
             "x-ms-summary": "Email subject",
-            "type":"string",
+            "type": "string",
             "x-ms-visibility": "advanced"
           },
           {
             "name": "emailBody",
-            "in":"query",
+            "in": "query",
             "description": "Email body",
-            "required":false,
+            "required": false,
             "x-ms-summary": "Email body",
-            "type":"string",
+            "type": "string",
             "x-ms-visibility": "advanced"
           }
         ],
@@ -2454,26 +2454,26 @@
         "x-ms-visibility": "important"
       },
       "put": {
-        "tags":[
+        "tags": [
           "DocuSign"
         ],
         "summary": "Update envelope custom field",
         "description": "Update value for the specified envelope custom field",
         "operationId": "UpdateEnvelopeCustomField",
-        "consumes":[
+        "consumes": [
           "application/json",
           "text/json",
           "application/xml",
           "text/xml",
           "application/x-www-form-urlencoded"
         ],
-        "produces":[
+        "produces": [
           "application/json",
           "text/json",
           "application/xml",
           "text/xml"
         ],
-        "parameters":[
+        "parameters": [
           {
             "name": "accountId",
             "in": "path",
@@ -2508,11 +2508,11 @@
           },
           {
             "name": "fieldType",
-            "in":"query",
+            "in": "query",
             "description": "Custom Field Type",
-            "required":true,
+            "required": true,
             "x-ms-summary": "Field Type",
-            "type":"string"
+            "type": "string"
           },
           {
             "name": "name",
@@ -2539,33 +2539,33 @@
             }
           }
         },
-        "deprecated":false,
+        "deprecated": false,
         "x-ms-visibility": "important",
         "x-ms-no-generic-test": true
       }
     },
     "/accounts/{accountId}/envelopes/{envelopeId}/views/sender": {
       "post": {
-        "tags":[
+        "tags": [
           "DocuSign"
         ],
         "summary": "Generate Embedded Sender URL",
         "description": "Generate Embedded Sender URL",
         "operationId": "GenerateEmbeddedSenderURL",
-        "consumes":[
+        "consumes": [
           "application/json",
           "text/json",
           "application/xml",
           "text/xml",
           "application/x-www-form-urlencoded"
         ],
-        "produces":[
+        "produces": [
           "application/json",
           "text/json",
           "application/xml",
           "text/xml"
         ],
-        "parameters":[
+        "parameters": [
           {
             "name": "accountId",
             "in": "path",
@@ -2592,24 +2592,30 @@
           },
           {
             "name": "openIn",
-            "in":"query",
+            "in": "query",
             "description": "Open in",
-            "required":true,
+            "required": true,
             "x-ms-summary": "Open in",
-            "x-ms-visibility":"important",
-            "type":"string",
-            "enum":["Prepare", "Tagging"],
+            "x-ms-visibility": "important",
+            "type": "string",
+            "enum": [
+              "Prepare",
+              "Tagging"
+            ],
             "default": "Prepare"
           },
           {
             "name": "returnUrl",
-            "in":"query",
+            "in": "query",
             "description": "Return URL",
-            "required":true,
+            "required": true,
             "x-ms-summary": "Return URL",
-            "x-ms-visibility":"important",
-            "type":"string",
-            "enum":["DocuSign homepage", "Add a different URL"],
+            "x-ms-visibility": "important",
+            "type": "string",
+            "enum": [
+              "DocuSign homepage",
+              "Add a different URL"
+            ],
             "default": "DocuSign homepage"
           },
           {
@@ -2631,14 +2637,14 @@
             }
           }
         },
-        "deprecated":false,
+        "deprecated": false,
         "x-ms-visibility": "important",
         "x-ms-no-generic-test": true
       }
     },
-    "/accounts/{accountId}/envelopes/{envelopeId}/views/recipient":{
-      "post":{
-        "tags":[
+    "/accounts/{accountId}/envelopes/{envelopeId}/views/recipient": {
+      "post": {
+        "tags": [
           "DocuSign"
         ],
         "summary": "Generate Embedded Signing URL",
@@ -2713,24 +2719,46 @@
           },
           {
             "name": "authenticationMethod",
-            "in":"query",
+            "in": "query",
             "description": "Authentication Method",
-            "required":true,
+            "required": true,
             "x-ms-summary": "Authentication Method",
             "x-ms-visibility": "important",
-            "type":"string",
-            "enum":["Biometric", "Email", "HTTPBasicAuth", "Kerberos", "KnowledgeBasedAuth", "None", "PaperDocuments", "Password", "RSASecureID", "SingleSignOn_CASiteminder", "SingleSignOn_InfoCard", "SingleSignOn_MicrosoftActiveDirectory", "SingleSignOn_Other", "SingleSignOn_Passport", "SingleSignOn_SAML", "Smartcard", "SSLMutualAuth", "X509Certificate"],
+            "type": "string",
+            "enum": [
+              "Biometric",
+              "Email",
+              "HTTPBasicAuth",
+              "Kerberos",
+              "KnowledgeBasedAuth",
+              "None",
+              "PaperDocuments",
+              "Password",
+              "RSASecureID",
+              "SingleSignOn_CASiteminder",
+              "SingleSignOn_InfoCard",
+              "SingleSignOn_MicrosoftActiveDirectory",
+              "SingleSignOn_Other",
+              "SingleSignOn_Passport",
+              "SingleSignOn_SAML",
+              "Smartcard",
+              "SSLMutualAuth",
+              "X509Certificate"
+            ],
             "default": "None"
           },
           {
             "name": "returnUrl",
-            "in":"query",
+            "in": "query",
             "description": "Return URL",
-            "required":true,
+            "required": true,
             "x-ms-summary": "Return URL",
-            "x-ms-visibility":"important",
-            "type":"string",
-            "enum":["Default URL", "Add a different URL"],
+            "x-ms-visibility": "important",
+            "type": "string",
+            "enum": [
+              "Default URL",
+              "Add a different URL"
+            ],
             "default": "Default URL"
           },
           {
@@ -3398,7 +3426,13 @@
             "type": "string",
             "description": "Verification Type",
             "x-ms-summary": "Verification Type",
-            "enum":["None", "Access Code", "ID Verification", "Phone Authentication", "Knowledge Based"],
+            "enum": [
+              "None",
+              "Access Code",
+              "ID Verification",
+              "Phone Authentication",
+              "Knowledge Based"
+            ],
             "default": "None"
           },
           {
@@ -3782,7 +3816,7 @@
         "x-ms-visibility": "important"
       }
     },
-    "/login_information": {
+    "/oauth/userinfo": {
       "get": {
         "tags": [
           "DocuSign"
@@ -3810,12 +3844,12 @@
     },
     "/accounts/{accountId}/identity_verification": {
       "get": {
-        "tags":[
+        "tags": [
           "DocuSign"
         ],
-        "summary":"Workflow Ids",
-        "description":"Get workflow ids",
-        "operationId":"GetWorkflowIDs",
+        "summary": "Workflow Ids",
+        "description": "Get workflow ids",
+        "operationId": "GetWorkflowIDs",
         "consumes": [],
         "produces": [
           "application/json",
@@ -3838,7 +3872,8 @@
               "value-title": "name"
             },
             "type": "string"
-          }],
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -4699,7 +4734,7 @@
                     "description": "Tab type",
                     "x-ms-summary": "Type",
                     "x-ms-test-value": "select tab type"
-                    },
+                  },
                   "tabId": {
                     "type": "string",
                     "x-ms-summary": "Id",
@@ -4862,8 +4897,8 @@
         },
         "deprecated": false,
         "x-ms-visibility": "internal"
-    }
-  },
+      }
+    },
     "/anchortab_schema": {
       "get": {
         "tags": [
@@ -5643,7 +5678,7 @@
       "x-ms-visibility": "important"
     },
     "AddRemindersResponse": {
-      "type":"object",
+      "type": "object",
       "properties": {
         "reminderEnabled": {
           "description": "Reminder enabled",
@@ -5698,7 +5733,7 @@
             "parameter": "verificationType"
           }
         },
-        "value-path":"Schema"
+        "value-path": "Schema"
       }
     },
     "AdditionalURLForSenderView": {
@@ -5712,7 +5747,7 @@
             "parameter": "returnUrl"
           }
         },
-        "value-path":"Schema"
+        "value-path": "Schema"
       }
     },
     "AdditionalURL": {
@@ -5726,7 +5761,7 @@
             "parameter": "returnUrl"
           }
         },
-        "value-path":"Schema"
+        "value-path": "Schema"
       }
     },
     "BuildNumberSchema": {
@@ -5735,7 +5770,7 @@
       "properties": {},
       "x-ms-dynamic-schema": {
         "operationId": "StaticResponseForBuildNumberSchema",
-        "value-path":"Schema"
+        "value-path": "Schema"
       }
     },
     "AccountCustomFields": {
@@ -5921,7 +5956,7 @@
           "x-ms-summary": "Title",
           "description": "This output indicates the title of the activity in the citation card.",
           "type": "string"
-          },
+        },
         "description": {
           "minLength": 1,
           "x-ms-summary": "Description",
@@ -6126,8 +6161,8 @@
         }
       }
     },
-    "EmbeddedSenderResponse":{
-      "type":"object",
+    "EmbeddedSenderResponse": {
+      "type": "object",
       "properties": {
         "url": {
           "description": "The url of embedded sender view.",
@@ -6138,7 +6173,7 @@
       }
     },
     "EmbeddedSigningResponse": {
-      "type":"object",
+      "type": "object",
       "properties": {
         "url": {
           "description": "The url of embedded signing view.",
@@ -6267,7 +6302,7 @@
         },
         "details": {
           "type": "object",
-          "additionalProperties": { }
+          "additionalProperties": {}
         }
       },
       "additionalProperties": false
@@ -6307,11 +6342,11 @@
         }
       }
     },
-    "EnvelopeVoidResponse":{
+    "EnvelopeVoidResponse": {
       "type": "object",
       "properties": {}
     },
-    "EnvelopeResendResponse":{
+    "EnvelopeResendResponse": {
       "type": "object",
       "properties": {}
     },
@@ -6599,7 +6634,7 @@
         }
       }
     },
-    "SignatureTypesResponse":{
+    "SignatureTypesResponse": {
       "type": "object",
       "properties": {
         "tabTypes": {
