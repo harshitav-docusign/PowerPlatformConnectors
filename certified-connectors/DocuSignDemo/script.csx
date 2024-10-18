@@ -2998,17 +2998,50 @@ public class Script : ScriptBase
     var body = ParseContentAsJArray(await this.Context.Request.Content.ReadAsStringAsync().ConfigureAwait(false), true);
     var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
     var fieldList = new JArray();
+    var tableList = new JArray();
+    var rowValueList = new JArray();
     var documentId = query.Get("documentGuid");
+    string tableName = string.Empty;
 
     foreach (var field in body)
     {
-      fieldList.Add(new JObject
+      if (field["fieldType"].ToString().Equals("TableRow"))
+      {
+        tableList.Add(new JObject
         {
           ["name"] = field["name"],
           ["value"] = field["value"]
         });
+      
+        rowValueList.Add(new JObject
+        {
+          ["docGenFormFieldList"] = tableList
+        });
+
+        tableName = field["tableName"].ToString();
+      }
+      else 
+      {
+        fieldList.Add(new JObject
+        {
+          ["name"] = field["name"],
+          ["value"] = field["value"]
+        });
+      }
     }
 
+    if (!string.IsNullOrEmpty(tableName))
+    {
+      fieldList.Add(new JObject
+      {
+        ["label"] = tableName,
+        ["type"] = "TableRow",
+        ["required"] = "True",
+        ["name"] = tableName,
+        ["rowValues"] = rowValueList
+      });
+    }
+    
     var docGenFormFields = new JArray
     {
       new JObject

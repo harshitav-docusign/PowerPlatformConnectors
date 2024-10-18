@@ -454,6 +454,23 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "fieldType": {
+                    "type": "string",
+                    "x-ms-summary": "Type",
+                    "description": "Type of the Docgen field`",
+                    "enum": [
+                      "TextBox",
+                      "Date",
+                      "Number",
+                      "Select",
+                      "TableRow"
+                    ]
+                  },
+                  "tableName": {
+                    "type": "string",
+                    "x-ms-summary": "TableName",
+                    "description": "TableName"
+                  },
                   "name": {
                     "type": "string",
                     "x-ms-summary": "Name",
