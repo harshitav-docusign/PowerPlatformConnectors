@@ -2998,7 +2998,6 @@ public class Script : ScriptBase
     var body = ParseContentAsJArray(await this.Context.Request.Content.ReadAsStringAsync().ConfigureAwait(false), true);
     var query = HttpUtility.ParseQueryString(this.Context.Request.RequestUri.Query);
     var fieldList = new JArray();
-    var tableList = new JArray();
     var rowValueList = new JArray();
     var documentId = query.Get("documentGuid");
     string tableName = string.Empty;
@@ -3007,15 +3006,18 @@ public class Script : ScriptBase
     {
       if (field["fieldType"].ToString().Equals("TableRow"))
       {
-        tableList.Add(new JObject
+        var docGenFormFieldList = new JArray
         {
-          ["name"] = field["name"],
-          ["value"] = field["value"]
-        });
-      
+          new JObject
+          {
+            ["name"] = field["name"],
+            ["value"] = field["value"]
+          },
+        };
+
         rowValueList.Add(new JObject
         {
-          ["docGenFormFieldList"] = tableList
+          ["docGenFormFieldList"] = docGenFormFieldList
         });
 
         tableName = field["tableName"].ToString();
