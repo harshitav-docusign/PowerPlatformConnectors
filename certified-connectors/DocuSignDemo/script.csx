@@ -2820,7 +2820,7 @@ public class Script : ScriptBase
 
       rowValueList.Add(new JObject
       {
-          ["docGenFormFieldList"] = docGenFormFieldList
+        ["docGenFormFieldList"] = docGenFormFieldList
       });
     }
 
@@ -3031,20 +3031,18 @@ public class Script : ScriptBase
     {
       foreach (var field in body)
       {
-        if (field["fieldType"].ToString().Equals("Table row"))
+        if (field["fieldType"].ToString() == "Table row")
         {
           var rowNumber = field["rowNumber"].Value<int>();
           tableName = field["tableName"].ToString();
-          if (tableMap.ContainsKey(rowNumber))
+
+          if (!tableMap.ContainsKey(rowNumber))
           {
-            tableMap[rowNumber].Add(field);
-          } 
-          else
-          {
-            tableMap[rowNumber] = new List<JToken> { field };
+            tableMap[rowNumber] = new List<JToken>();
           }
+          tableMap[rowNumber].Add(field);
         }
-        else 
+        else
         {
           fieldList.Add(new JObject
           {
