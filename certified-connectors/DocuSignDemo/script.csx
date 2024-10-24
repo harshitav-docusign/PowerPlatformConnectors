@@ -2806,22 +2806,21 @@ public class Script : ScriptBase
   private JArray createRowValueList(Dictionary<int, List<JToken>> tableMap)
   {
     var rowValueList = new JArray();
-    foreach(var row in tableMap.Keys)
+    foreach (var row in tableMap)
     {
       var docGenFormFieldList = new JArray();
-      foreach (var columnValue in (new JArray(tableMap[row])))
+      foreach (var column in row.Value)
       {
-        docGenFormFieldList.Add(
-          new JObject
-          {
-            ["name"] = columnValue["name"],
-            ["value"] = columnValue["value"]
-          });
+        docGenFormFieldList.Add(new JObject
+        {
+          ["name"] = column["name"],
+          ["value"] = column["value"]
+        });
       }
 
       rowValueList.Add(new JObject
       {
-        ["docGenFormFieldList"] = docGenFormFieldList
+          ["docGenFormFieldList"] = docGenFormFieldList
       });
     }
 
@@ -3057,7 +3056,7 @@ public class Script : ScriptBase
     }
      catch (HttpRequestException ex)
     {
-      throw new ConnectorException(HttpStatusCode.BadGateway, "Check your form field name" + ex.Message, ex);
+      throw new ConnectorException(HttpStatusCode.BadGateway, "Docgen field name not found" + ex.Message, ex);
     }
 
     if (!string.IsNullOrEmpty(tableName))
