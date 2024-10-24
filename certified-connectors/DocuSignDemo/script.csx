@@ -2802,6 +2802,31 @@ public class Script : ScriptBase
 
     return filteredEnvelopesDetails;
   }
+
+  private JArray createRowValueList(Dictionary<int, List<JToken>> tableMap)
+  {
+    var rowValueList = new JArray();
+    foreach(var row in tableMap.Keys)
+    {
+      var docGenFormFieldList = new JArray();
+      foreach (var columnValue in (new JArray(tableMap[row])))
+      {
+        docGenFormFieldList.Add(
+          new JObject
+          {
+            ["name"] = columnValue["name"],
+            ["value"] = columnValue["value"]
+          });
+      }
+
+      rowValueList.Add(new JObject
+      {
+        ["docGenFormFieldList"] = docGenFormFieldList
+      });
+    }
+
+    return rowValueList;
+  }
   
   private void AddParamsForSelectedRecipientType(JArray signers, JObject body) 
   {
@@ -3001,39 +3026,43 @@ public class Script : ScriptBase
     var rowValueList = new JArray();
     var documentId = query.Get("documentGuid");
     string tableName = string.Empty;
+    Dictionary<int, List<JToken>> tableMap = new Dictionary<int, List<JToken>>();
 
-    foreach (var field in body)
+    try
     {
-      if (field["fieldType"].ToString().Equals("TableRow"))
+      foreach (var field in body)
       {
-        var docGenFormFieldList = new JArray
+        if (field["fieldType"].ToString().Equals("Table row"))
         {
-          new JObject
+          var rowNumber = field["rowNumber"].Value<int>();
+          tableName = field["tableName"].ToString();
+          if (tableMap.ContainsKey(rowNumber))
+          {
+            tableMap[rowNumber].Add(field);
+          } 
+          else
+          {
+            tableMap[rowNumber] = new List<JToken> { field };
+          }
+        }
+        else 
+        {
+          fieldList.Add(new JObject
           {
             ["name"] = field["name"],
             ["value"] = field["value"]
-          },
-        };
-
-        rowValueList.Add(new JObject
-        {
-          ["docGenFormFieldList"] = docGenFormFieldList
-        });
-
-        tableName = field["tableName"].ToString();
+          });
+        }
       }
-      else 
-      {
-        fieldList.Add(new JObject
-        {
-          ["name"] = field["name"],
-          ["value"] = field["value"]
-        });
-      }
+    }
+     catch (HttpRequestException ex)
+    {
+      throw new ConnectorException(HttpStatusCode.BadGateway, "Check your form field name" + ex.Message, ex);
     }
 
     if (!string.IsNullOrEmpty(tableName))
     {
+      rowValueList = createRowValueList(tableMap);
       fieldList.Add(new JObject
       {
         ["label"] = tableName,
